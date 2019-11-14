@@ -23,8 +23,6 @@ function _createReactReduxMapStateToProps<M extends Record<string, ReduxMonster>
                     Object.keys(monsters).reduce(
                         function (monsterStates, key : keyof M)
                         {
-                            console.log("state", state);
-                            console.log("monsters[key]", monsters[key]);
                             var monster = monsters[key];
                             var ownStateKey = monsters[key].ownStateKey;
                             monsterStates[key] = ownStateKey in state ? state[ownStateKey] : Object.assign({}, monster.initialState);
@@ -89,8 +87,6 @@ function _createReactReduxMapDispatchToProps<M extends Record<string, ReduxMonst
                     cacheScope.props = props;
                 }
             }
-
-            console.log("cacheScope.props", cacheScope.props);
 
             return cacheScope.props;
         }; 
