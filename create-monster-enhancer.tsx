@@ -50,28 +50,29 @@ function _createReactReduxMapDispatchToProps<M extends Record<string, ReduxMonst
         var cacheScope = {
             monsters : monsters,
             dispacth : null as unknown as Dispatch,
+            actionCreatorProps : {} as DispatchProps,
             props : {} as DispatchProps,
         };
+
+        cacheScope.actionCreatorProps = mapDispatch(
+            Object.keys(cacheScope.monsters).reduce(
+                function (monsterActionCreators, key : keyof M)
+                {
+                    monsterActionCreators[key] = cacheScope.monsters[key].actionCreators;
+
+                    return monsterActionCreators;
+                },
+                {} as Parameters<typeof mapDispatch>["0"]
+            )
+        );
 
         return function <OwnProps = any>(dispatch : Dispatch, ownProps : OwnProps)
         {
             if(cacheScope.dispacth !== dispatch) {
-                var actionCreatorProps = mapDispatch(
-                    Object.keys(cacheScope.monsters).reduce(
-                        function (monsterActionCreators, key : keyof M)
-                        {
-                            monsterActionCreators[key] = cacheScope.monsters[key].actionCreators;
-
-                            return monsterActionCreators;
-                        },
-                        {} as Parameters<typeof mapDispatch>["0"]
-                    )
-                );
-
-                var props = Object.keys(actionCreatorProps).reduce(
+                var props = Object.keys(cacheScope.actionCreatorProps).reduce(
                     function (props, actionCreatorPropName : keyof DispatchProps)
                     {
-                        var actionCreator = actionCreatorProps[actionCreatorPropName];
+                        var actionCreator = cacheScope.actionCreatorProps[actionCreatorPropName];
 
                         props[actionCreatorPropName] = function (...args : Parameters<typeof actionCreator>)
                         {
