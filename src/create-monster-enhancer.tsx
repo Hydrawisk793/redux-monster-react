@@ -6,14 +6,18 @@ import { isUndefinedOrNull, isString, isCallable } from "../../lib/kaphein-js/ut
 import { deepEquals } from "../../lib/kaphein-js/utils/object";
 import { memoize } from "../../lib/kaphein-js/utils/function";
 
-import { ReduxMonster } from "../../lib/redux-monster";
+import { ReduxMonster } from "../redux-monster";
 import { Dispatch } from "redux";
 import { ConnectedComponent } from "react-redux";
 
-function createMonsterEnhancer<M, StateProps = {}, DispatchProps = {}>(
-    monsters : M extends Record<string, ReduxMonster | string> ? M : Record<string, ReduxMonster | string>,
-    mapState : (monsterStates : { [K in keyof M] : (M[K] extends ReduxMonster ? M[K]["initialState"] : (M[K] extends string ? any : never)) }) => StateProps,
-    mapDispatch : (monsterActionCreators : { [K in keyof M] : (M[K] extends ReduxMonster ? M[K]["actionCreators"] : (M[K] extends string ? any : never)) }) => DispatchProps,
+function createMonsterEnhancer<M extends Record<string, ReduxMonster | string>, StateProps = {}, DispatchProps = {}>(
+    monsters : M,
+    mapState : (
+        monsterStates : { [K in keyof M] : (M[K] extends ReduxMonster ? M[K]["initialState"] : (M[K] extends string ? any : never)) }
+    ) => StateProps,
+    mapDispatch : (
+        monsterActionCreators : { [K in keyof M] : (M[K] extends ReduxMonster ? M[K]["actionCreators"] : (M[K] extends string ? any : never)) }
+    ) => DispatchProps,
 )
 {
     var monsterEntries = Object.entries(monsters);
@@ -27,8 +31,8 @@ function createMonsterEnhancer<M, StateProps = {}, DispatchProps = {}>(
 
             return monsterOwnStateKeys;
         },
-        {} as { [K2 in ({ [K in keyof M] : (M[K] extends string ? K : never)}[keyof M])] : M[K2] extends string ? M[K2] : never }
-    );
+        {} as Record<string, string>
+    ) as { [K2 in ({ [K in keyof M] : (M[K] extends string ? K : never)}[keyof M])] : M[K2] extends string ? M[K2] : never };
     var monsterOwnStateKeyEntries = Object.entries(monsterOwnStateKeys);
     var actualMonsters = monsterEntries.reduce(
         function (actualMonsters, pair)
@@ -40,8 +44,8 @@ function createMonsterEnhancer<M, StateProps = {}, DispatchProps = {}>(
 
             return actualMonsters;
         },
-        {} as { [K2 in ({ [K in keyof M] : (M[K] extends ReduxMonster ? K : never)}[keyof M])] : M[K2] extends ReduxMonster ? M[K2] : never }
-    );
+        {} as Record<string, ReduxMonster>
+    ) as { [K2 in ({ [K in keyof M] : (M[K] extends ReduxMonster ? K : never)}[keyof M])] : M[K2] extends ReduxMonster ? M[K2] : never };
     var actualMonsterEntries = Object.entries(actualMonsters);
 
     var reactReduxMapStateToProps = (
@@ -59,7 +63,7 @@ function createMonsterEnhancer<M, StateProps = {}, DispatchProps = {}>(
                         {
                             var monster = pair[1] as ReduxMonster;
                             var ownStateKey = monster.ownStateKey;
-                            acc[pair[0]] = ownStateKey in state ? state[ownStateKey] as typeof monster["initialState"] : Object.assign({}, monster.initialState);
+                            acc[pair[0] as keyof M] = ownStateKey in state ? state[ownStateKey] as typeof monster["initialState"] : Object.assign({}, monster.initialState);
 
                             return acc;
                         },
@@ -70,7 +74,7 @@ function createMonsterEnhancer<M, StateProps = {}, DispatchProps = {}>(
                         {
                             var monsterOwnStateKey = pair[1] as string;
                             if(monsterOwnStateKey in state) {
-                                acc[pair[0]] = state[monsterOwnStateKey];
+                                acc[pair[0] as keyof M] = state[monsterOwnStateKey];
                             }
 
                             return acc;
@@ -101,8 +105,8 @@ function createMonsterEnhancer<M, StateProps = {}, DispatchProps = {}>(
                         function (acc, pair)
                         {
                             var monster = pair[1] as ReduxMonster;
-                            acc[pair[0]] = monster.actionCreators;
-        
+                            acc[pair[0] as keyof M] = monster.actionCreators;
+
                             return acc;
                         },
                         {} as Parameters<typeof mapDispatch>["0"]
@@ -113,9 +117,7 @@ function createMonsterEnhancer<M, StateProps = {}, DispatchProps = {}>(
                 return function <OwnProps = any>(dispatch : Dispatch, ownProps : OwnProps)
                 {
                     if(cacheScope.dispacth !== dispatch) {
-                        var props = {} as ReturnType<typeof mapDispatch>;
-
-                        Object
+                        var props = Object
                             .entries(
                                 mapDispatch(
                                     // Object.assign(
@@ -143,11 +145,11 @@ function createMonsterEnhancer<M, StateProps = {}, DispatchProps = {}>(
                                     {
                                         return dispatch(actionCreator.apply(null, args));
                                     };
-    
+
                                     return acc;
                                 },
-                                props
-                            );
+                                {} as Record<string, any>
+                            ) as ReturnType<typeof mapDispatch>
                         ;
 
                         if(!deepEquals(cacheScope.props, props)) {
@@ -162,7 +164,9 @@ function createMonsterEnhancer<M, StateProps = {}, DispatchProps = {}>(
         : null
     );
 
-    type InjectedProps = ReturnType<typeof reactReduxMapStateToProps> & ReturnType<ReturnType<typeof reactReduxMapDispatchToProps>>;
+    type InjectedProps = (typeof reactReduxMapStateToProps extends null ? {} : ReturnType<NonNullable<typeof reactReduxMapStateToProps>>)
+        & (typeof reactReduxMapDispatchToProps extends null ? {} : ReturnType<ReturnType<NonNullable<typeof reactReduxMapDispatchToProps>>>)
+    ;
 
     var enhanceComponent = connect(
         reactReduxMapStateToProps,
@@ -177,7 +181,6 @@ function createMonsterEnhancer<M, StateProps = {}, DispatchProps = {}>(
             type OwnProps = Omit<React.ComponentProps<C>, keyof InjectedProps>;
 
             var E = enhanceComponent<any>(componentType) as ConnectedComponent<React.ComponentType<InjectedProps>, OwnProps>;
-            E["whyDidYouRender"] = true;
 
             function W(props : React.PropsWithChildren<OwnProps>)
             {
