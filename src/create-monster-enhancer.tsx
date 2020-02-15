@@ -1,19 +1,20 @@
 import React from "react";
-import { connect } from "react-redux";
+import { connect, ReactReduxContext } from "react-redux";
 import hoistNonReactStatics from "hoist-non-react-statics";
 
-import { isUndefinedOrNull, isString, isCallable } from "../../lib/kaphein-js/utils/type-trait";
-import { deepEquals } from "../../lib/kaphein-js/utils/object";
-import { memoize } from "../../lib/kaphein-js/utils/function";
+import { isUndefinedOrNull, isString, isCallable } from "kaphein-js";
+import { deepEquals } from "kaphein-js";
+import { memoize } from "kaphein-js";
 
-import { ReduxMonster } from "../redux-monster";
+import { ReduxMonster, ReduxMonsterRegistry } from "redux-monster";
 import { Dispatch } from "redux";
 import { ConnectedComponent } from "react-redux";
 
 function createMonsterEnhancer<M extends Record<string, ReduxMonster | string>, StateProps = {}, DispatchProps = {}>(
     monsters : M,
-    mapState : (
-        monsterStates : { [K in keyof M] : (M[K] extends ReduxMonster ? M[K]["initialState"] : (M[K] extends string ? any : never)) }
+    mapState : <ReduxStoreState>(
+        monsterStates : { [K in keyof M] : (M[K] extends ReduxMonster ? M[K]["initialState"] : (M[K] extends string ? any : never)) },
+        rootState : ReduxStoreState
     ) => StateProps,
     mapDispatch : (
         monsterActionCreators : { [K in keyof M] : (M[K] extends ReduxMonster ? M[K]["actionCreators"] : (M[K] extends string ? any : never)) }
@@ -82,7 +83,7 @@ function createMonsterEnhancer<M extends Record<string, ReduxMonster | string>, 
                         monsterStates
                     );
 
-                    return mapState(monsterStates);
+                    return mapState(monsterStates, state);
                 },
                 {
                     alwaysEvaluate : true,
@@ -117,40 +118,43 @@ function createMonsterEnhancer<M extends Record<string, ReduxMonster | string>, 
                 return function <OwnProps = any>(dispatch : Dispatch, ownProps : OwnProps)
                 {
                     if(cacheScope.dispacth !== dispatch) {
-                        var props = Object
-                            .entries(
-                                mapDispatch(
-                                    // Object.assign(
-                                    //     cacheScope.monsterOwnStateKeyEntries.reduce(
-                                    //         function (acc, pair)
-                                    //         {
-                                    //             var monsterOwnStateKey = pair[1] as string;
+                        var mappedActionCreators = mapDispatch(
+                            // Object.assign(
+                            //     cacheScope.monsterOwnStateKeyEntries.reduce(
+                            //         function (acc, pair)
+                            //         {
+                            //             var monsterOwnStateKey = pair[1] as string;
 
-                                    //             //TODO : Find the actual monster with own state key from a registry;
-                                    //             throw new Error("Not implemented yet...");
-                                    //         },
-                                    //         {} as Parameters<typeof mapDispatch>["0"]
-                                    //     ),
-                                    //     actualMonsterActionCreators
-                                    // )
-                                    cacheScope.actualMonsterActionCreators
-                                )
-                            )
-                            .reduce(
-                                function (acc, pair)
-                                {
-                                    var actionCreator = pair[1];
+                            //             //TODO : Find the actual monster with own state key from a registry;
+                            //             throw new Error("Not implemented yet...");
+                            //         },
+                            //         {} as Parameters<typeof mapDispatch>["0"]
+                            //     ),
+                            //     actualMonsterActionCreators
+                            // )
+                            cacheScope.actualMonsterActionCreators
+                        );
 
-                                    acc[pair[0]] = function (...args : Parameters<typeof actionCreator>)
+                        var props = (
+                            mappedActionCreators
+                            ? Object
+                                .entries(mappedActionCreators)
+                                .reduce(
+                                    function (acc, pair)
                                     {
-                                        return dispatch(actionCreator.apply(null, args));
-                                    };
+                                        var actionCreator = pair[1];
 
-                                    return acc;
-                                },
-                                {} as Record<string, any>
-                            ) as ReturnType<typeof mapDispatch>
-                        ;
+                                        acc[pair[0]] = function (...args : Parameters<typeof actionCreator>)
+                                        {
+                                            return dispatch(actionCreator.apply(null, args));
+                                        };
+
+                                        return acc;
+                                    },
+                                    {} as Record<string, any>
+                                ) as ReturnType<typeof mapDispatch>
+                            : {}
+                        ) as DispatchProps;
 
                         if(!deepEquals(cacheScope.props, props)) {
                             cacheScope.props = props;
@@ -182,20 +186,42 @@ function createMonsterEnhancer<M extends Record<string, ReduxMonster | string>, 
 
             var E = enhanceComponent<any>(componentType) as ConnectedComponent<React.ComponentType<InjectedProps>, OwnProps>;
 
-            function W(props : React.PropsWithChildren<OwnProps>)
+            function W(props : OwnProps)
             {
                 return (
-                    <E
-                        { ...props }
-                    />
+                    <>
+                        <ReactReduxContext.Consumer>
+                            {
+                                (context) =>
+                                {
+                                    if(context) {
+                                        const monsterRegistry = ReduxMonsterRegistry.findMonsterRegistryFromReduxStore(context.store);
+                                        if(null !== monsterRegistry) {
+                                            for(let count = actualMonsterEntries.length, i = 0; i < count; ++i) {
+                                                const monster = actualMonsterEntries[i][1] as ReduxMonster;
+                                                monsterRegistry.registerMonster(monster);
+                                            }
+                                        }
+                                    }
+
+                                    return null;
+                                }
+                            }
+                        </ReactReduxContext.Consumer>
+                        <E
+                            { ...props }
+                        />
+                    </>
                 );
             };
             W.ConnectedComponent = E;
+            W.OwnPropType = {} as OwnProps;
             W.injectedPropType = {} as InjectedProps;
             W.displayName = "WithReduxMonsterProps(" + (componentType.displayName || componentType.name) + ")";
             W.whyDidYouRender = true;
 
-            return hoistNonReactStatics(W, componentType);
+            return hoistNonReactStatics(hoistNonReactStatics(React.memo(W), W), componentType);
+            // return hoistNonReactStatics(W, componentType);
         }
     );
 };

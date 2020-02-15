@@ -1,2 +1,2 @@
-# Redux MONSTER React.js binding
-A binding module to connect redux monsters to React.js components.
+# redux-monster-react
+A react.js binding for redux-monster.

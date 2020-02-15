@@ -1,4 +1,4 @@
-import { ReduxMonster } from "../redux-monster/redux-monster";
+import { ReduxMonster } from "redux-monster";
 
 declare interface MonsterEnhancerConstructionOption<
     M extends Record<string, ReduxMonster | string> = {},
