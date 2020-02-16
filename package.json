@@ -11,7 +11,6 @@
   "scripts": {
     "start": "styleguidist server",
     "build": "rm -rf dist && npm test && tsc -p ./tsconfig.types.json && webpack --mode=production -c webpack.config.js",
-    "build-without-webpack": "rm -rf dist npm test && && cross-env NODE_ENV=production babel src --extensions '.tsx' --out-dir dist --copy-files && tsc -p ./tsconfig.types.json",
     "test": "eslint src && eslint src -c src/.eslintrc.ts.json --ext '.d.ts'",
     "prepublishOnly": "npm run build"
   },
