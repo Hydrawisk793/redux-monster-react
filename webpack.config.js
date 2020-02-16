@@ -16,7 +16,8 @@ module.exports = (function ()
             filename : "index.js",
             path : path.resolve(__dirname, outputDirectoryName),
             library : "kapheinJsReactUtils",
-            libraryTarget : "umd"
+            libraryTarget : "umd",
+            globalObject : "this"
         },
         optimization : {
             minimizer : [
