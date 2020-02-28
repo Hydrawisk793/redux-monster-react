@@ -15,13 +15,15 @@ export function createMonsterEnhancer<
     DispatchProps = {}
 >(
     monsters : M,
-    mapState : <ReduxStoreState>(
+    mapState : <ReduxStoreState extends Record<string, any> = Record<string, any>, OwnProps = {}>(
         monsterStates : { [K in keyof M] : (M[K] extends ReduxMonster ? M[K]["initialState"] : (M[K] extends string ? any : never)) },
-        rootState : ReduxStoreState
+        rootState? : ReduxStoreState,
+        context? : {},
+        ownProps? : OwnProps
     ) => StateProps,
     mapDispatch : (
         monsterActionCreators : { [K in keyof M] : (M[K] extends ReduxMonster ? M[K]["actionCreators"] : (M[K] extends string ? any : never)) }
-    ) => DispatchProps,
+    ) => DispatchProps
 )
 {
     const monsterEntries = Object.entries(monsters);
@@ -52,49 +54,65 @@ export function createMonsterEnhancer<
     ) as { [K2 in ({ [K in keyof M] : (M[K] extends ReduxMonster ? K : never)}[keyof M])] : M[K2] extends ReduxMonster ? M[K2] : never };
     const actualMonsterEntries = Object.entries(actualMonsters);
 
-    const reactReduxMapStateToProps = (
-        (
+    const reactReduxMapStateToProps = (function ()
+    {
+        if (
             isCallable(mapState)
             && (monsterOwnStateKeyEntries.length > 0 || actualMonsterEntries.length > 0)
-        )
-        ? (
-            memoize(
-                function <ReduxStoreState>(state : ReduxStoreState extends Record<string, any> ? ReduxStoreState : Record<string, any>)
+        ) {
+            const createMonsterStates = function <ReduxStoreState>(state : ReduxStoreState)
+            {
+                const monsterStates = {} as Parameters<typeof mapState>["0"];
+                actualMonsterEntries.reduce(
+                    function (acc, pair)
+                    {
+                        const monster = pair[1] as ReduxMonster;
+                        const ownStateKey = monster.ownStateKey;
+                        acc[pair[0] as keyof M] = ownStateKey in state ? state[ownStateKey] as typeof monster["initialState"] : Object.assign({}, monster.initialState);
+
+                        return acc;
+                    },
+                    monsterStates
+                );
+                monsterOwnStateKeyEntries.reduce(
+                    function (acc, pair)
+                    {
+                        const monsterOwnStateKey = pair[1] as string;
+                        if(monsterOwnStateKey in state) {
+                            acc[pair[0] as keyof M] = state[monsterOwnStateKey];
+                        }
+
+                        return acc;
+                    },
+                    monsterStates
+                );
+
+                return monsterStates;
+            };
+
+            const finalFunction = (
+                mapState.length >= 4
+                ? function <ReduxStoreState, OwnProps>(state : ReduxStoreState, ownProps : OwnProps)
                 {
-                    const monsterStates = {} as Parameters<typeof mapState>["0"];
-                    actualMonsterEntries.reduce(
-                        function (acc, pair)
-                        {
-                            const monster = pair[1] as ReduxMonster;
-                            const ownStateKey = monster.ownStateKey;
-                            acc[pair[0] as keyof M] = ownStateKey in state ? state[ownStateKey] as typeof monster["initialState"] : Object.assign({}, monster.initialState);
+                    return mapState(createMonsterStates(state), state, {}, ownProps);
+                }
+                : function <ReduxStoreState>(state : ReduxStoreState)
+                {
+                    return mapState(createMonsterStates(state), state, {});
+                }
+            );
 
-                            return acc;
-                        },
-                        monsterStates
-                    );
-                    monsterOwnStateKeyEntries.reduce(
-                        function (acc, pair)
-                        {
-                            const monsterOwnStateKey = pair[1] as string;
-                            if(monsterOwnStateKey in state) {
-                                acc[pair[0] as keyof M] = state[monsterOwnStateKey];
-                            }
-
-                            return acc;
-                        },
-                        monsterStates
-                    );
-
-                    return mapState(monsterStates, state);
-                },
+            return memoize(
+                finalFunction,
                 {
                     alwaysEvaluate : true,
                 }
-            )
-        )
-        : null
-    );
+            );
+        }
+        else {
+            return null;
+        }
+    })();
 
     const reactReduxMapDispatchToProps = (
         isCallable(mapDispatch)
