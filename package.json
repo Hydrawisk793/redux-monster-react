@@ -10,9 +10,9 @@
   ],
   "scripts": {
     "start": "styleguidist server",
-    "build": "rm -rf dist && npm test && tsc -p ./tsconfig.types.json && webpack --mode=production -c webpack.config.js",
-    "test": "eslint src && eslint src -c src/.eslintrc.ts.json --ext '.d.ts'",
-    "prepublishOnly": "npm run build"
+    "lint": "eslint src && eslint src -c src/.eslintrc.ts.json --ext '.d.ts'",
+    "build": "rm -rf dist && npm run lint && tsc -p ./tsconfig.types.json && webpack --mode production -c webpack.config.js",
+    "prepack": "npm install && npm run build"
   },
   "repository": {
     "type": "git",
