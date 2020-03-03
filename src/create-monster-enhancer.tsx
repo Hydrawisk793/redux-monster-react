@@ -5,8 +5,11 @@ import { Dispatch } from "redux";
 import { ConnectedComponent } from "react-redux";
 import { ReduxMonster, ReduxMonsterRegistry } from "redux-monster";
 import {
-    isUndefinedOrNull, isString, isCallable,
-    deepEquals, memoize
+    isUndefinedOrNull,
+    isString,
+    isCallable,
+    memoize,
+    shallowEquals
 } from "kaphein-js";
 
 export function createMonsterEnhancer<
@@ -106,6 +109,7 @@ export function createMonsterEnhancer<
                 finalFunction,
                 {
                     alwaysEvaluate : true,
+                    equalComparer : shallowEquals,
                 }
             );
         }
@@ -121,7 +125,6 @@ export function createMonsterEnhancer<
             {
                 const cacheScope = {
                     monsters : monsters,
-                    dispacth : null as unknown as Dispatch,
                     monsterOwnStateKeyEntries : monsterOwnStateKeyEntries,
                     actualMonsterActionCreators : actualMonsterEntries.reduce(
                         function (acc, pair)
@@ -133,54 +136,53 @@ export function createMonsterEnhancer<
                         },
                         {} as Parameters<typeof mapDispatch>["0"]
                     ),
+                    prevMappedActionCreators : {},
                     props : {} as ReturnType<typeof mapDispatch>,
                 };
 
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                return function <OwnProps = any>(dispatch : Dispatch, ownProps : OwnProps)
+                return function (dispatch : Dispatch)
                 {
-                    if(cacheScope.dispacth !== dispatch) {
-                        const mappedActionCreators = mapDispatch(
-                            // Object.assign(
-                            //     cacheScope.monsterOwnStateKeyEntries.reduce(
-                            //         function (acc, pair)
-                            //         {
-                            //             const monsterOwnStateKey = pair[1] as string;
+                    const mappedActionCreators = mapDispatch(
+                        cacheScope.actualMonsterActionCreators
+                    );
 
-                            //             //TODO : Find the actual monster with own state key from a registry;
-                            //             throw new Error("Not implemented yet...");
-                            //         },
-                            //         {} as Parameters<typeof mapDispatch>["0"]
-                            //     ),
-                            //     actualMonsterActionCreators
-                            // )
-                            cacheScope.actualMonsterActionCreators
-                        );
+                    let isChanged = false;
+                    const nextProps = (
+                        mappedActionCreators
+                        ? Object
+                            .entries(mappedActionCreators)
+                            .reduce(
+                                function (acc, pair)
+                                {
+                                    const actionCreatorName = pair[0];
+                                    const actionCreator = pair[1];
 
-                        const props = (
-                            mappedActionCreators
-                            ? Object
-                                .entries(mappedActionCreators)
-                                .reduce(
-                                    function (acc, pair)
-                                    {
-                                        const actionCreator = pair[1];
+                                    if(
+                                        !(actionCreatorName in cacheScope.prevMappedActionCreators)
+                                        || cacheScope.prevMappedActionCreators[actionCreatorName] !== actionCreator
+                                    ) {
+                                        isChanged = true;
 
-                                        acc[pair[0]] = function (...args : Parameters<typeof actionCreator>)
+                                        cacheScope.prevMappedActionCreators[actionCreatorName] = actionCreator;
+
+                                        acc[actionCreatorName] = function (...args : Parameters<typeof actionCreator>)
                                         {
                                             return dispatch(actionCreator.apply(null, args));
                                         };
+                                    }
+                                    else {
+                                        acc[actionCreatorName] = cacheScope.props[actionCreatorName];
+                                    }
 
-                                        return acc;
-                                    },
-                                    {} as Record<string, any>
-                                ) as ReturnType<typeof mapDispatch>
-                            : {}
-                        ) as DispatchProps;
+                                    return acc;
+                                },
+                                {} as Record<string, any>
+                            ) as ReturnType<typeof mapDispatch>
+                        : {}
+                    ) as DispatchProps;
 
-                        if(!deepEquals(cacheScope.props, props)) {
-                            cacheScope.props = props;
-                        }
+                    if(isChanged) {
+                        cacheScope.props = nextProps;
                     }
 
                     return cacheScope.props;
@@ -218,7 +220,7 @@ export function createMonsterEnhancer<
                                 {
                                     if(context) {
                                         const monsterRegistry = ReduxMonsterRegistry.findMonsterRegistryFromReduxStore(context.store);
-                                        if(null !== monsterRegistry) {
+                                        if(monsterRegistry) {
                                             for(let count = actualMonsterEntries.length, i = 0; i < count; ++i) {
                                                 const monster = actualMonsterEntries[i][1] as ReduxMonster;
                                                 monsterRegistry.registerMonster(monster);
@@ -240,10 +242,8 @@ export function createMonsterEnhancer<
             W.OwnPropType = {} as OwnProps;
             W.injectedPropType = {} as InjectedProps;
             W.displayName = "WithReduxMonsterProps(" + (componentType.displayName || componentType.name) + ")";
-            W.whyDidYouRender = true;
 
             return hoistNonReactStatics(hoistNonReactStatics(React.memo(W), W), componentType);
-            // return hoistNonReactStatics(W, componentType);
         }
     );
 }
