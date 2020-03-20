@@ -1,6 +1,6 @@
 import { ReduxMonster } from "redux-monster";
 
-declare interface MonsterEnhancerConstructionOption<
+export declare interface MonsterEnhancerConstructionOption<
     M extends Record<string, ReduxMonster | string> = {},
     StateProps = {},
     DispatchProps = {}
@@ -16,7 +16,3 @@ declare interface MonsterEnhancerConstructionOption<
         monsterActionCreators : { [K in keyof M] : (M[K] extends ReduxMonster ? M[K]["actionCreators"] : (M[K] extends string ? any : never)) }
     ) => DispatchProps;
 }
-
-export {
-    MonsterEnhancerConstructionOption,
-};
