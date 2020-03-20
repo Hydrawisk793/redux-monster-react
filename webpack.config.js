@@ -1,7 +1,7 @@
 var path = require("path");
 
 var CopyWebpackPlugin = require("copy-webpack-plugin");
-var UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+var TerserPlugin = require("terser-webpack-plugin");
 // var ES3Plugin = require("webpack-es3-plugin");
 var nodeExternals = require("webpack-node-externals");
 
@@ -21,10 +21,8 @@ module.exports = (function ()
         },
         optimization : {
             minimizer : [
-                new UglifyJsPlugin({
-                    uglifyOptions : {
-                        // ie8 : true,
-                        // safari10 : true,
+                new TerserPlugin({
+                    terserOptions : {
                         output : {
                             quote_keys : true
                         }

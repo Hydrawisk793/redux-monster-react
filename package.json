@@ -43,8 +43,8 @@
     "eslint": "^6.8.0",
     "eslint-plugin-react": "^7.18.3",
     "react-styleguidist": "^10.6.2",
+    "terser-webpack-plugin": "^2.3.5",
     "typescript": "^3.7.5",
-    "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.41.6",
     "webpack-cli": "^3.3.11",
     "webpack-es3-plugin": "^1.5.0",
@@ -54,9 +54,9 @@
     "@types/react": "^16.9.19",
     "@types/react-redux": "^7.1.7",
     "hoist-non-react-statics": "^3.3.2",
-    "kaphein-js": "^0.1.5",
+    "kaphein-js": "^0.3.2",
     "react": "^16.8.4",
     "react-redux": "^6.0.1 || ^7.0.0",
-    "redux-monster": "^0.1.1"
+    "redux-monster": "^0.1.2"
   }
 }
