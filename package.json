@@ -38,17 +38,14 @@
     "@typescript-eslint/eslint-plugin": "^2.19.2",
     "@typescript-eslint/parser": "^2.19.2",
     "babel-loader": "^8.0.6",
-    "copy-webpack-plugin": "^5.1.1",
-    "cross-env": "^7.0.0",
+    "copy-webpack-plugin": "^6.3.2",
     "eslint": "^6.8.0",
     "eslint-plugin-react": "^7.18.3",
-    "react-styleguidist": "^10.6.2",
-    "terser-webpack-plugin": "^2.3.5",
-    "typescript": "^3.7.5",
-    "webpack": "^4.41.6",
-    "webpack-cli": "^3.3.11",
-    "webpack-es3-plugin": "^1.5.0",
-    "webpack-node-externals": "^1.7.2"
+    "terser-webpack-plugin": "^4.2.3",
+    "typescript": "^4.1.2",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12",
+    "webpack-node-externals": "^2.5.2"
   },
   "dependencies": {
     "@types/react": "^16.14.2",
