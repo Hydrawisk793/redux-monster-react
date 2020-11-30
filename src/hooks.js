@@ -1,18 +1,44 @@
-import { useStore } from "react-redux";
-import { ReduxMonsterRegistry } from "redux-monster";
+var isNonNullObject = require("kaphein-js").isNonNullObject;
+var useStore = require("react-redux").useStore;
 
-/**
- *  @param {import("redux-monster").ReduxMonster[]} monsters
- */
-export function useMonsters(monsters)
+var ReduxMonsterRegistry = require("redux-monster").ReduxMonsterRegistry;
+
+module.exports = (function ()
 {
-    const store = useStore();
+    /**
+     *  @typedef {import("redux-monster").ReduxMonster} AnyReduxMonster
+     */
 
-    if(Array.isArray(monsters)) {
-        const monsterRegistry = ReduxMonsterRegistry.findMonsterRegistryFromReduxStore(store);
+    /**
+     *  @param {...AnyReduxMonster} [monster]
+     */
+    function useMonsters()
+    {
+        var i;
 
-        for(let i = 0; i < monsters.length; ++i) {
-            monsterRegistry.registerMonster(monsters[i]);
+        for(i = 0; i < arguments.length; ++i)
+        {
+            if(!isNonNullObject(arguments[i]))
+            {
+                throw new TypeError("The parameters must satisfy \"redux-monster\".ReduxMonster interface.");
+            }
+        }
+
+        var reduxStore = useStore();
+        if(reduxStore)
+        {
+            var registry = ReduxMonsterRegistry.findFromReduxStore(reduxStore);
+            if(registry)
+            {
+                for(i = 0; i < arguments.length; ++i)
+                {
+                    registry.registerMonster(arguments[i]);
+                }
+            }
         }
     }
-}
+
+    return {
+        useMonsters : useMonsters
+    };
+})();

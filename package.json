@@ -9,9 +9,9 @@
     "dist"
   ],
   "scripts": {
-    "lint": "eslint src && eslint src -c src/.eslintrc.ts.json --ext '.d.ts'",
+    "lint": "tsc --project tsconfig.dts.json && eslint src/**/*.{js,jsx}",
     "lint:fix": "npm run lint -- --fix",
-    "build": "rm -rf dist && npm run lint && tsc -p ./tsconfig.types.json && webpack --mode production -c webpack.config.js",
+    "build": "rm -rf dist && npm run lint && webpack --mode production --config webpack.config.js",
     "prepack": "npm install && npm run build"
   },
   "repository": {
@@ -53,7 +53,7 @@
     "hoist-non-react-statics": "^3.3.2",
     "kaphein-js": "~0.14.2",
     "react": "^16.14.0",
-    "react-redux": "^6.0.1 || ^7.0.0",
-    "redux-monster": "~0.1.2"
+    "react-redux": "^7.2.2",
+    "redux-monster": "~0.2.0"
   }
 }

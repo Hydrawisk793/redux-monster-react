@@ -41,18 +41,18 @@ module.exports = (function ()
             }),
         ],
         module : {
-            rules: [
+            rules : [
                 {
                     test : /\.tsx?$/,
                     exclude : ["/node_modules/"],
-                    loaders : ["babel-loader"],
+                    loaders : ["babel-loader"]
                 },
                 {
                     test : /\.jsx?$/,
                     exclude : ["/node_modules/"],
-                    loaders : ["babel-loader"],
-                },
-            ],
+                    loaders : ["babel-loader"]
+                }
+            ]
         },
         externals : [
             nodeExternals()
