@@ -2,7 +2,6 @@ var path = require("path");
 
 var CopyWebpackPlugin = require("copy-webpack-plugin");
 var TerserPlugin = require("terser-webpack-plugin");
-// var ES3Plugin = require("webpack-es3-plugin");
 var nodeExternals = require("webpack-node-externals");
 
 module.exports = (function ()
@@ -15,7 +14,7 @@ module.exports = (function ()
         output : {
             filename : "index.js",
             path : path.resolve(__dirname, outputDirectoryName),
-            library : "kapheinJsReactUtils",
+            library : "reduxMonsterReact",
             libraryTarget : "umd",
             globalObject : "this"
         },
@@ -31,14 +30,15 @@ module.exports = (function ()
             ]
         },
         plugins : [
-            // new ES3Plugin(),
-            new CopyWebpackPlugin([
-                {
-                    context : "src",
-                    from : "**/*.d.ts",
-                    to : ""
-                }
-            ]),
+            new CopyWebpackPlugin({
+                patterns : [
+                    {
+                        context : "src",
+                        from : "**/*.d.ts",
+                        to : ""
+                    }
+                ]
+            }),
         ],
         module : {
             rules: [
