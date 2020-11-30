@@ -1,59 +1,59 @@
 {
-  "name": "redux-monster-react",
-  "version": "0.1.3",
-  "description": "A react.js binding for redux-monster.",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "lint": "eslint src && eslint src -c src/.eslintrc.ts.json --ext '.d.ts'",
-    "lint:fix": "npm run lint -- --fix",
-    "build": "rm -rf dist && npm run lint && tsc -p ./tsconfig.types.json && webpack --mode production -c webpack.config.js",
-    "prepack": "npm install && npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Hydrawisk793/redux-monster-react.git"
-  },
-  "author": "Hydrawisk793 <hyw793@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Hydrawisk793/redux-monster-react/issues"
-  },
-  "homepage": "https://github.com/Hydrawisk793/redux-monster-react#readme",
-  "bundleDependencies": [],
-  "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.8.4",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/plugin-transform-modules-commonjs": "^7.8.3",
-    "@babel/plugin-transform-react-jsx": "^7.8.3",
-    "@babel/plugin-transform-reserved-words": "^7.8.3",
-    "@babel/preset-env": "^7.8.4",
-    "@babel/preset-react": "^7.8.3",
-    "@babel/preset-typescript": "^7.8.3",
-    "@typescript-eslint/eslint-plugin": "^2.19.2",
-    "@typescript-eslint/parser": "^2.19.2",
-    "babel-loader": "^8.0.6",
-    "copy-webpack-plugin": "^6.3.2",
-    "eslint": "^6.8.0",
-    "eslint-plugin-react": "^7.18.3",
-    "terser-webpack-plugin": "^4.2.3",
-    "typescript": "^4.1.2",
-    "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12",
-    "webpack-node-externals": "^2.5.2"
-  },
-  "dependencies": {
-    "@types/react": "^16.14.2",
-    "@types/react-redux": "^7.1.11",
-    "hoist-non-react-statics": "^3.3.2",
-    "kaphein-js": "~0.14.2",
-    "react": "^16.14.0",
-    "react-redux": "^6.0.1 || ^7.0.0",
-    "redux-monster": "~0.1.2"
-  }
+    "name": "redux-monster-react",
+    "version": "0.2.0",
+    "description": "A react.js binding for redux-monster.",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "lint": "tsc --project tsconfig.dts.json && eslint src/**/*.{js,jsx}",
+        "lint:fix": "npm run lint -- --fix",
+        "build": "rm -rf dist && npm run lint && webpack --mode production --config webpack.config.js",
+        "prepack": "npm install && npm run build"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Hydrawisk793/redux-monster-react.git"
+    },
+    "author": "Hydrawisk793 <hyw793@gmail.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Hydrawisk793/redux-monster-react/issues"
+    },
+    "homepage": "https://github.com/Hydrawisk793/redux-monster-react#readme",
+    "bundleDependencies": [],
+    "dependencies": {
+        "@types/react": "^16.14.2",
+        "@types/react-redux": "^7.1.11",
+        "hoist-non-react-statics": "^3.3.2",
+        "kaphein-js": "~0.14.2",
+        "react": "^16.14.0",
+        "react-redux": "^7.2.2",
+        "redux-monster": "~0.2.0"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.8.4",
+        "@babel/core": "^7.8.4",
+        "@babel/plugin-proposal-class-properties": "^7.8.3",
+        "@babel/plugin-transform-modules-commonjs": "^7.8.3",
+        "@babel/plugin-transform-react-jsx": "^7.8.3",
+        "@babel/plugin-transform-reserved-words": "^7.8.3",
+        "@babel/preset-env": "^7.8.4",
+        "@babel/preset-react": "^7.8.3",
+        "@babel/preset-typescript": "^7.8.3",
+        "@typescript-eslint/eslint-plugin": "^2.19.2",
+        "@typescript-eslint/parser": "^2.19.2",
+        "babel-loader": "^8.0.6",
+        "copy-webpack-plugin": "^6.3.2",
+        "eslint": "^6.8.0",
+        "eslint-plugin-react": "^7.18.3",
+        "terser-webpack-plugin": "^4.2.3",
+        "typescript": "^4.1.2",
+        "webpack": "^4.44.2",
+        "webpack-cli": "^3.3.12",
+        "webpack-node-externals": "^2.5.2"
+    }
 }

@@ -130,12 +130,12 @@ export function createMonsterEnhancer<
                         function (acc, pair)
                         {
                             const monster = pair[1] as ReduxMonster;
-                            acc[pair[0] as keyof M] = monster.actionCreators;
+                            acc[pair[0]] = monster.actionCreators;
 
                             return acc;
                         },
-                        {} as Parameters<typeof mapDispatch>["0"]
-                    ),
+                        {}
+                    ) as Parameters<typeof mapDispatch>["0"],
                     prevMappedActionCreators : {},
                     props : {} as ReturnType<typeof mapDispatch>,
                 };
@@ -167,7 +167,7 @@ export function createMonsterEnhancer<
 
                                         acc[actionCreatorName] = function (...args : Parameters<typeof actionCreator>)
                                         {
-                                            return dispatch(actionCreator.apply(null, args));
+                                            return dispatch(actionCreator.apply(void 0, args));
                                         };
                                     }
                                     else {
@@ -219,7 +219,7 @@ export function createMonsterEnhancer<
                                 (context) =>
                                 {
                                     if(context) {
-                                        const monsterRegistry = ReduxMonsterRegistry.findMonsterRegistryFromReduxStore(context.store);
+                                        const monsterRegistry = ReduxMonsterRegistry.findFromReduxStore(context.store);
                                         if(monsterRegistry) {
                                             for(let count = actualMonsterEntries.length, i = 0; i < count; ++i) {
                                                 const monster = actualMonsterEntries[i][1] as ReduxMonster;
