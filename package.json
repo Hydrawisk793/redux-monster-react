@@ -51,12 +51,12 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
-    "@types/react": "^16.9.19",
-    "@types/react-redux": "^7.1.7",
+    "@types/react": "^16.14.2",
+    "@types/react-redux": "^7.1.11",
     "hoist-non-react-statics": "^3.3.2",
-    "kaphein-js": "^0.3.2",
-    "react": "^16.8.4",
+    "kaphein-js": "~0.14.2",
+    "react": "^16.14.0",
     "react-redux": "^6.0.1 || ^7.0.0",
-    "redux-monster": "^0.1.2"
+    "redux-monster": "~0.1.2"
   }
 }
