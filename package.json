@@ -1,6 +1,6 @@
 {
     "name": "redux-monster-react",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "A react.js binding for redux-monster.",
     "main": "dist/index.js",
     "module": "dist/index.js",
@@ -32,7 +32,7 @@
         "kaphein-js": "~0.14.2",
         "react": "^16.14.0",
         "react-redux": "^7.2.2",
-        "redux-monster": "~0.2.1"
+        "redux-monster": "~0.2.2"
     },
     "devDependencies": {
         "@babel/cli": "^7.8.4",
@@ -50,6 +50,7 @@
         "copy-webpack-plugin": "^6.3.2",
         "eslint": "^6.8.0",
         "eslint-plugin-react": "^7.18.3",
+        "husky": "^2.7.0",
         "terser-webpack-plugin": "^4.2.3",
         "typescript": "^4.1.2",
         "webpack": "^4.44.2",
