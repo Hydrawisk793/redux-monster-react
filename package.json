@@ -32,7 +32,7 @@
         "kaphein-js": "~0.14.2",
         "react": "^16.14.0",
         "react-redux": "^7.2.2",
-        "redux-monster": "~0.2.2"
+        "redux-monster": "~0.2.3"
     },
     "devDependencies": {
         "@babel/cli": "^7.8.4",
