@@ -3,5 +3,6 @@
         "es6": true,
         "node": false,
         "commonjs": true
-    }
+    },
+    "parser" : "@babel/eslint-parser"
 }
