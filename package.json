@@ -1,6 +1,6 @@
 {
     "name": "redux-monster-react",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "A react.js binding for redux-monster.",
     "main": "dist/index.js",
     "module": "dist/index.js",
@@ -29,7 +29,8 @@
         "@types/react": "^16.8.25",
         "@types/react-redux": "^7.1.16",
         "hoist-non-react-statics": "^3.3.2",
-        "kaphein-js": "~0.14.3"
+        "kaphein-js": "~0.14.3",
+        "kaphein-js-react-utils": "~0.9.0"
     },
     "peerDependencies": {
         "react": ">=16.8.0 <18.0.0",
