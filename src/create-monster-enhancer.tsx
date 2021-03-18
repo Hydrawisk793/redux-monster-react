@@ -5,12 +5,12 @@ import { Dispatch } from "redux";
 import { ConnectedComponent } from "react-redux";
 import { ReduxMonster, ReduxMonsterRegistry } from "redux-monster";
 import {
-    isUndefinedOrNull,
+    isDefinedAndNotNull,
     isString,
-    isCallable,
-    memoize,
-    shallowEquals
-} from "kaphein-js";
+    isFunction,
+} from "kaphein-js-type-trait";
+import { shallowEquals } from "kaphein-js-object-utils";
+import { memoize } from "kaphein-js-memoization";
 
 export function createMonsterEnhancer<
     M extends Record<string, ReduxMonster | string>,
@@ -47,7 +47,7 @@ export function createMonsterEnhancer<
         function (actualMonsters, pair)
         {
             const monster = pair[1];
-            if(!isString(monster) && !isUndefinedOrNull(monster)) {
+            if(!isString(monster) && isDefinedAndNotNull(monster)) {
                 actualMonsters[pair[0]] = monster;
             }
 
@@ -60,7 +60,7 @@ export function createMonsterEnhancer<
     const reactReduxMapStateToProps = (function ()
     {
         if (
-            isCallable(mapState)
+            isFunction(mapState)
             && (monsterOwnStateKeyEntries.length > 0 || actualMonsterEntries.length > 0)
         ) {
             const createMonsterStates = function <ReduxStoreState>(state : ReduxStoreState)
@@ -119,7 +119,7 @@ export function createMonsterEnhancer<
     })();
 
     const reactReduxMapDispatchToProps = (
-        isCallable(mapDispatch)
+        isFunction(mapDispatch)
         ? (
             function ()
             {
