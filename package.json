@@ -2,29 +2,32 @@
     "name": "redux-monster-react",
     "version": "0.3.1",
     "description": "A react.js binding for redux-monster.",
+    "author": "Hydrawisk793 <hyw793@gmail.com>",
+    "license": "MIT",
     "main": "dist/index.js",
-    "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
         "dist"
     ],
+    "keywords": [
+        "reudx",
+        "react"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Hydrawisk793/redux-monster-react.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Hydrawisk793/redux-monster-react/issues"
+    },
+    "homepage": "https://github.com/Hydrawisk793/redux-monster-react#readme",
     "scripts": {
         "lint": "tsc --project tsconfig.dts.json && eslint src/**/*.{js,jsx}",
         "lint:fix": "npm run lint -- --fix",
         "build": "rm -rf dist && npm run lint && webpack --mode production --config webpack.config.js",
         "prepack": "npm install && npm run build"
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/Hydrawisk793/redux-monster-react.git"
-    },
-    "author": "Hydrawisk793 <hyw793@gmail.com>",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/Hydrawisk793/redux-monster-react/issues"
-    },
-    "homepage": "https://github.com/Hydrawisk793/redux-monster-react#readme",
-    "bundleDependencies": [],
+    "bundledDependencies": [],
     "dependencies": {
         "@types/react": "^16.8.25",
         "@types/react-redux": "^7.1.16",
