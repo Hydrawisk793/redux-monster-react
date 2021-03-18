@@ -32,12 +32,12 @@ module.exports = (function ()
                 {
                     test : /\.tsx?$/,
                     exclude : ["/node_modules/"],
-                    loaders : ["babel-loader"]
+                    loader : "babel-loader"
                 },
                 {
                     test : /\.jsx?$/,
                     exclude : ["/node_modules/"],
-                    loaders : ["babel-loader"]
+                    loader : "babel-loader"
                 }
             ]
         },

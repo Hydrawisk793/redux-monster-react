@@ -54,7 +54,7 @@
         "@typescript-eslint/eslint-plugin": "^2.19.2",
         "@typescript-eslint/parser": "^2.19.2",
         "babel-loader": "^8.2.2",
-        "copy-webpack-plugin": "^6.4.1",
+        "copy-webpack-plugin": "^8.0.0",
         "eslint": "^7.20.0",
         "eslint-plugin-react": "^7.22.0",
         "husky": "^2.7.0",
@@ -62,8 +62,8 @@
         "react-redux": "^7.2.2",
         "redux-monster": "^0.3.0",
         "typescript": "^4.1.5",
-        "webpack": "^4.46.0",
-        "webpack-cli": "^3.3.12",
+        "webpack": "^5.26.3",
+        "webpack-cli": "^4.5.0",
         "webpack-node-externals": "^2.5.2"
     }
 }
