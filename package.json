@@ -40,7 +40,7 @@
     "peerDependencies": {
         "react": ">=16.8.0 <18.0.0",
         "react-redux": ">=7.1.0 <8.0.0",
-        "redux-monster": ">=0.3.0 <0.4.0"
+        "redux-monster": ">=0.4.0 <0.5.0"
     },
     "devDependencies": {
         "@babel/cli": "^7.8.4",
@@ -62,7 +62,7 @@
         "husky": "^2.7.0",
         "react": "^17.0.1",
         "react-redux": "^7.2.2",
-        "redux-monster": "^0.3.0",
+        "redux-monster": "~0.4.0",
         "typescript": "^4.1.5",
         "webpack": "^5.26.3",
         "webpack-cli": "^4.5.0",
