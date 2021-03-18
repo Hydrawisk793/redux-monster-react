@@ -3,7 +3,7 @@ import { connect, ReactReduxContext } from "react-redux";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import { Dispatch } from "redux";
 import { ConnectedComponent } from "react-redux";
-import { ReduxMonster, ReduxMonsterRegistry } from "redux-monster";
+import { AnyReduxMonster, ReduxMonsterRegistry } from "redux-monster";
 import {
     isDefinedAndNotNull,
     isString,
@@ -13,19 +13,19 @@ import { shallowEquals } from "kaphein-js-object-utils";
 import { memoize } from "kaphein-js-memoization";
 
 export function createMonsterEnhancer<
-    M extends Record<string, ReduxMonster | string>,
+    M extends Record<string, AnyReduxMonster | string>,
     StateProps = {},
     DispatchProps = {}
 >(
     monsters : M,
     mapState : <ReduxStoreState extends Record<string, any> = Record<string, any>, OwnProps = {}>(
-        monsterStates : { [K in keyof M] : (M[K] extends ReduxMonster ? M[K]["initialState"] : (M[K] extends string ? any : never)) },
+        monsterStates : { [K in keyof M] : (M[K] extends AnyReduxMonster ? M[K]["initialState"] : (M[K] extends string ? any : never)) },
         rootState? : ReduxStoreState,
         context? : {},
         ownProps? : OwnProps
     ) => StateProps,
     mapDispatch : (
-        monsterActionCreators : { [K in keyof M] : (M[K] extends ReduxMonster ? M[K]["actionCreators"] : (M[K] extends string ? any : never)) }
+        monsterActionCreators : { [K in keyof M] : (M[K] extends AnyReduxMonster ? M[K]["actionCreators"] : (M[K] extends string ? any : never)) }
     ) => DispatchProps
 )
 {
@@ -53,8 +53,8 @@ export function createMonsterEnhancer<
 
             return actualMonsters;
         },
-        {} as Record<string, ReduxMonster>
-    ) as { [K2 in ({ [K in keyof M] : (M[K] extends ReduxMonster ? K : never)}[keyof M])] : M[K2] extends ReduxMonster ? M[K2] : never };
+        {} as Record<string, AnyReduxMonster>
+    ) as { [K2 in ({ [K in keyof M] : (M[K] extends AnyReduxMonster ? K : never)}[keyof M])] : M[K2] extends AnyReduxMonster ? M[K2] : never };
     const actualMonsterEntries = Object.entries(actualMonsters);
 
     const reactReduxMapStateToProps = (function ()
@@ -69,7 +69,7 @@ export function createMonsterEnhancer<
                 actualMonsterEntries.reduce(
                     function (acc, pair)
                     {
-                        const monster = pair[1] as ReduxMonster;
+                        const monster = pair[1] as AnyReduxMonster;
                         const ownStateKey = monster.ownStateKey;
                         acc[pair[0] as keyof M] = ownStateKey in state ? state[ownStateKey] as typeof monster["initialState"] : Object.assign({}, monster.initialState);
 
@@ -129,7 +129,7 @@ export function createMonsterEnhancer<
                     actualMonsterActionCreators : actualMonsterEntries.reduce(
                         function (acc, pair)
                         {
-                            const monster = pair[1] as ReduxMonster;
+                            const monster = pair[1] as AnyReduxMonster;
                             acc[pair[0]] = monster.actionCreators;
 
                             return acc;
@@ -222,7 +222,7 @@ export function createMonsterEnhancer<
                                         const monsterRegistry = ReduxMonsterRegistry.findFromReduxStore(context.store);
                                         if(monsterRegistry) {
                                             for(let count = actualMonsterEntries.length, i = 0; i < count; ++i) {
-                                                const monster = actualMonsterEntries[i][1] as ReduxMonster;
+                                                const monster = actualMonsterEntries[i][1] as AnyReduxMonster;
                                                 monsterRegistry.registerMonster(monster);
                                             }
                                         }
