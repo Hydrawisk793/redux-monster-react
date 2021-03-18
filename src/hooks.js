@@ -14,7 +14,7 @@ var ReduxMonsterRegistry = reduxMonster.ReduxMonsterRegistry;
 module.exports = (function ()
 {
     /**
-     *  @typedef {import("redux-monster").ReduxMonster} AnyReduxMonster
+     *  @typedef {import("redux-monster").AnyReduxMonster} AnyReduxMonster
      */
 
     /**
