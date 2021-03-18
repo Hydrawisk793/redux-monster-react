@@ -1,6 +1,6 @@
 {
     "name": "redux-monster-react",
-    "version": "0.3.2",
+    "version": "0.4.0",
     "description": "A react.js binding for redux-monster.",
     "author": "Hydrawisk793 <hyw793@gmail.com>",
     "license": "MIT",
